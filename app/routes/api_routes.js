@@ -2,11 +2,11 @@ var ObjectID = require('mongodb').ObjectID;
 
 module.exports = function(app, db) {
 	// GET request
-	app.get('/profileInfo/:id', (req, res) => {
+	app.get('/userInfo/:id', (req, res) => {
 		const id = req.params.id;
     	const details = { '_id': new ObjectID(id) };
 
-		db.collection('profileInfo').findOne(details, (err, item) => {
+		db.collection('userInfo').findOne(details, (err, item) => {
 			if (err) {
 				res.send({'error':'An error has occurred'});
 			} else {
@@ -15,10 +15,10 @@ module.exports = function(app, db) {
 		});
 	});
 
-	app.get('/personalityInfo', (req, res) => {
+	app.get('/userInfo', (req, res) => {
 		const persType = req.params.persType;
 		const team = req.params.team;
-	   db.collection('personalityInfo').find({team: "A"},{persType:1}).toArray((err, item) => {
+	   db.collection('userInfo').find({team: "A"},{persType:1}).toArray((err, item) => {
 		   if (err) {
 			   res.send({'error':'An error has occurred'});
 		   } else {
@@ -28,30 +28,19 @@ module.exports = function(app, db) {
    });
 	
 	// POST request for profile info
-	app.post('/profileInfo', (req, res) => {
+	app.post('/userInfo', (req, res) => {
 		const info = { 
+			username: req.body.username,
+			password: req.body.password,
+			team: req.body.team, 
 			name: req.body.name, 
 			email: req.body.email,
-			phone: req.body.phone
-		};
-		
-		db.collection('profileInfo').insert(info, (err, result) => {
-			if (err) { 
-				res.send({ 'error': 'An error has occurred' }); 
-			} else {
-				res.send(result.ops[0]);
-			}
-		});
-	});
-	//post for personality info
-	app.post('/personalityInfo', (req, res) => {
-		const persinfo = { 
+			phone: req.body.phone,
 			persType: req.body.persType,
-			characteristics: req.body.characteristics,
-			team: req.body.team 
+			characteristics: req.body.characteristics
 		};
 		
-		db.collection('personalityInfo').insert(persinfo, (err, result) => {
+		db.collection('userInfo').insert(info, (err, result) => {
 			if (err) { 
 				res.send({ 'error': 'An error has occurred' }); 
 			} else {
@@ -61,7 +50,7 @@ module.exports = function(app, db) {
 	});
 
 	// DELETE request
-	app.delete('/profileInfo/:id', (req, res) => {
+	app.delete('/userInfo/:id', (req, res) => {
 		const id = req.params.id;
 		const details = { '_id': new ObjectID(id) };
 
@@ -75,7 +64,7 @@ module.exports = function(app, db) {
 	});
 
 	// PUT request
-	app.put('/profileInfo/:id', (req, res) => {
+	app.put('/userInfo/:id', (req, res) => {
 		const id = req.params.id;
 		const details = { '_id': new ObjectID(id) };
 		const note = { 
@@ -83,7 +72,7 @@ module.exports = function(app, db) {
 			title: req.body.title 
 		};
 
-		db.collection('profileInfo').update(details, note, (err, result) => {
+		db.collection('userInfo').update(details, note, (err, result) => {
 			if (err) {
 				res.send({'error':'An error has occurred'});
 			} else {
