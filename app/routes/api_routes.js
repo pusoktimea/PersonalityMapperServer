@@ -39,7 +39,8 @@ module.exports = function(app, db) {
 			if (err) {
 				return res.status(500).send('Error on the server.');
 			} else if (!user || req.body.password !== user.password) { 
-				return res.status(404).send('Incorrect user or pass');
+				// in the response we get 200 but auth false, so this way we can display the error message
+				res.status(200).send({ auth: false});
 			} else {
 				var token = jwt.sign({ id: user._id }, config.secret, {
 					expiresIn: 86400 // expires in 24 hours
