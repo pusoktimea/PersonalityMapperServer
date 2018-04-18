@@ -1,11 +1,18 @@
 var ObjectID = require('mongodb').ObjectID;
+var express = require('express');
+var router = express.Router();
+var bodyParser = require('body-parser');
+router.use(bodyParser.urlencoded({ extended: false }));
+router.use(bodyParser.json());
+var jwt = require('jsonwebtoken');
+var config = require('../../config/config');
 
 module.exports = function(app, db) {
 	// GET request
 	app.get('/userInfo/:id', (req, res) => {
 		const id = req.params.id;
-    	const details = { '_id': new ObjectID(id) };
-
+		const details = { '_id': new ObjectID(id) };
+		
 		db.collection('userInfo').findOne(details, (err, item) => {
 			if (err) {
 				res.send({'error':'An error has occurred'});
@@ -14,18 +21,33 @@ module.exports = function(app, db) {
 			}
 		});
 	});
-
+	
 	app.get('/userInfo', (req, res) => {
 		const persType = req.params.persType;
 		const team = req.params.team;
-	   db.collection('userInfo').find({team: "A"},{persType:1}).toArray((err, item) => {
-		   if (err) {
-			   res.send({'error':'An error has occurred'});
-		   } else {
-			   res.send(item);
-		   }
-	   });
-   });
+		db.collection('userInfo').find({team: "A"},{persType:1}).toArray((err, item) => {
+			if (err) {
+				res.send({'error':'An error has occurred'});
+			} else {
+				res.send(item);
+			}
+		});
+	});
+	
+	app.post('/login', function(req, res) {
+		db.collection('userInfo').findOne({username: req.body.username },  function (err, user) {
+			if (err) {
+				return res.status(500).send('Error on the server.');
+			} else if (!user || req.body.password !== user.password) { 
+				return res.status(404).send('Incorrect user or pass');
+			} else {
+				var token = jwt.sign({ id: user._id }, config.secret, {
+					expiresIn: 86400 // expires in 24 hours
+				});
+				res.status(200).send({ auth: true, token: token });
+			}
+		});
+	});
 	
 	// POST request for profile info
 	app.post('/userInfo', (req, res) => {
@@ -48,12 +70,12 @@ module.exports = function(app, db) {
 			}
 		});
 	});
-
+	
 	// DELETE request
 	app.delete('/userInfo/:id', (req, res) => {
 		const id = req.params.id;
 		const details = { '_id': new ObjectID(id) };
-
+		
 		db.collection('profileInfo').remove(details, (err, item) => {
 			if (err) {
 				res.send({'error':'An error has occurred'});
@@ -62,7 +84,7 @@ module.exports = function(app, db) {
 			} 
 		});
 	});
-
+	
 	// PUT request
 	app.put('/userInfo/:id', (req, res) => {
 		const id = req.params.id;
@@ -71,7 +93,7 @@ module.exports = function(app, db) {
 			text: req.body.text, 
 			title: req.body.title 
 		};
-
+		
 		db.collection('userInfo').update(details, note, (err, result) => {
 			if (err) {
 				res.send({'error':'An error has occurred'});
