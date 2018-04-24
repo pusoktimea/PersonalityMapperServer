@@ -8,10 +8,28 @@ var jwt = require('jsonwebtoken');
 var config = require('../../config/config');
 
 module.exports = function(app, db) {
+	// LOGIN POST request
+	app.post('/login', function(req, res) {
+		db.collection('userInfo').findOne({username: req.body.username },  function (err, user) {
+			if (err) {
+				return res.status(500).send('Error on the server.');
+			} else if (!user || req.body.password !== user.password) { 
+				// in the response we get 200 but auth false, so this way we can display the error message
+				res.status(200).send({ auth: false});
+			} else {
+				var token = jwt.sign({ id: user._id }, config.secret, {
+					expiresIn: 86400 // expires in 24 hours
+				});
+				res.status(200).send({ auth: true, token: token, user: req.body.username });
+			}
+		});
+	});
+	// USERINFO COLELCTION
+	// ======================
 	// GET request
-	app.get('/userInfo/:id', (req, res) => {
-		const id = req.params.id;
-		const details = { '_id': new ObjectID(id) };
+	app.get('/userInfo/:user', (req, res) => {
+		const user = req.params.user;
+		const details = { 'username': user };
 		
 		db.collection('userInfo').findOne(details, (err, item) => {
 			if (err) {
@@ -66,22 +84,6 @@ module.exports = function(app, db) {
 				res.send({'error':'An error has occurred'});
 			} else {
 				res.send(item);
-			}
-		});
-	});
-	
-	app.post('/login', function(req, res) {
-		db.collection('userInfo').findOne({username: req.body.username },  function (err, user) {
-			if (err) {
-				return res.status(500).send('Error on the server.');
-			} else if (!user || req.body.password !== user.password) { 
-				// in the response we get 200 but auth false, so this way we can display the error message
-				res.status(200).send({ auth: false});
-			} else {
-				var token = jwt.sign({ id: user._id }, config.secret, {
-					expiresIn: 86400 // expires in 24 hours
-				});
-				res.status(200).send({ auth: true, token: token });
 			}
 		});
 	});
