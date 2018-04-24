@@ -33,6 +33,42 @@ module.exports = function(app, db) {
 			}
 		});
 	});
+
+	app.get('/allTeams', (req, res) => {
+		const team = req.params.team;
+		db.collection('userInfo').find({},{team:1}).toArray((err, item) => {
+			if (err) {
+				res.send({'error':'An error has occurred'});
+			} else {
+				res.send(item);
+			}
+		});
+	});
+
+	app.get('/allUsers', (req, res) => {
+		const name = req.params.name;
+		db.collection('userInfo').find({},{name:1}).toArray((err, item) => {
+			if (err) {
+				res.send({'error':'An error has occurred'});
+			} else {
+				res.send(item);
+			}
+		});
+	});
+
+	app.get('/mbtiTest', (req, res) => {
+		const question = req.params.qestion;
+		const answerA = req.params.answerA;
+		const answerB = req.params.answerB;
+
+		db.collection('mbtiTest').find({}).toArray((err, item) => {
+			if (err) {
+				res.send({'error':'An error has occurred'});
+			} else {
+				res.send(item);
+			}
+		});
+	});
 	
 	app.post('/login', function(req, res) {
 		db.collection('userInfo').findOne({username: req.body.username },  function (err, user) {
@@ -64,6 +100,22 @@ module.exports = function(app, db) {
 		};
 		
 		db.collection('userInfo').insert(info, (err, result) => {
+			if (err) { 
+				res.send({ 'error': 'An error has occurred' }); 
+			} else {
+				res.send(result.ops[0]);
+			}
+		});
+	});
+
+	app.post('/mbtiTest', (req, res) => {
+		const info = { 
+			question: req.body.question,
+			answerA: req.body.answerA,
+			answerB: req.body.answerB
+		};
+		
+		db.collection('mbtiTest').insert(info, (err, result) => {
 			if (err) { 
 				res.send({ 'error': 'An error has occurred' }); 
 			} else {
