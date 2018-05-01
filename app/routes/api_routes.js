@@ -24,7 +24,7 @@ module.exports = function(app, db) {
 			}
 		});
 	});
-	// USERINFO COLELCTION
+	// USERINFO COLLECTION
 	// ======================
 	// GET request
 	app.get('/userInfo/:user', (req, res) => {
@@ -155,6 +155,21 @@ module.exports = function(app, db) {
 			} else {
 				res.send(note);
 			} 
+		});
+	});
+// mbtiTest COLLECTION
+	// ======================
+	// GET request
+	app.get('/mbtiQuestions', (req, res) => {
+		const question = req.params.question;
+		const answerA = req.params.answerA;
+		const answerB = req.params.answerB;
+		db.collection('mbtiTest').find({}).toArray((err, item) => {
+			if (err) {
+				res.send({'error':'An error has occurred'});
+			} else {
+				res.send(item);
+			}
 		});
 	});
 };
