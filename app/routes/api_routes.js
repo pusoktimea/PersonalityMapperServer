@@ -10,7 +10,7 @@ var config = require('../../config/config');
 module.exports = function(app, db) {
 	// LOGIN POST request
 	app.post('/login', function(req, res) {
-		db.collection('userInfo').findOne({username: req.body.username },  function (err, user) {
+		db.collection('loginInfo').findOne({username: req.body.username },  function (err, user) {
 			if (err) {
 				return res.status(500).send('Error on the server.');
 			} else if (!user || req.body.password !== user.password) { 
@@ -24,6 +24,31 @@ module.exports = function(app, db) {
 			}
 		});
 	});
+
+	//post add new user 
+	app.post('/userinfo', (req, res) => {
+		const info = { 
+			username: req.body.username,
+			password: req.body.password,
+			team: req.body.team, 
+			profile: {
+				name: req.body.name, 
+				email: req.body.email,
+				phone: req.body.phone,
+				persType: req.body.persType,
+				characteristics: req.body.characteristics
+			}
+		};
+		
+		db.collection('userInfo').insert(info, (err, result) => {
+			if (err) { 
+				res.send({ 'error': 'An error has occurred' }); 
+			} else {
+				res.send(result.ops[0]);
+			}
+		});
+	});
+
 	// USERINFO COLLECTION
 	// ======================
 	// GET request
@@ -88,28 +113,6 @@ module.exports = function(app, db) {
 		});
 	});
 	
-	// POST request for profile info
-	app.post('/userInfo', (req, res) => {
-		const info = { 
-			username: req.body.username,
-			password: req.body.password,
-			team: req.body.team, 
-			name: req.body.name, 
-			email: req.body.email,
-			phone: req.body.phone,
-			persType: req.body.persType,
-			characteristics: req.body.characteristics
-		};
-		
-		db.collection('userInfo').insert(info, (err, result) => {
-			if (err) { 
-				res.send({ 'error': 'An error has occurred' }); 
-			} else {
-				res.send(result.ops[0]);
-			}
-		});
-	});
-
 	app.post('/mbtiTest', (req, res) => {
 		const info = { 
 			question: req.body.question,
