@@ -142,25 +142,49 @@ module.exports = function(app, db) {
 			} 
 		});
 	});
-	
+
 	// PUT request
-	app.put('/userInfo/:id', (req, res) => {
-		const id = req.params.id;
-		const details = { '_id': new ObjectID(id) };
-		const note = { 
-			text: req.body.text, 
-			title: req.body.title 
+	app.put('/userInfo/:user', (req, res) => {
+		const user = req.params.user;
+		const details = { 'username': user };
+		const data = { 
+			name: req.body.name, 
+			email: req.body.email,
+			phone: req.body.phone,
+			persType: req.body.persType,
+			characteristics: req.body.characteristics
 		};
 		
-		db.collection('userInfo').update(details, note, (err, result) => {
+		db.collection('userInfo').update(details, data, (err, result) => {
 			if (err) {
 				res.send({'error':'An error has occurred'});
 			} else {
-				res.send(note);
+				res.send(data);
 			} 
 		});
 	});
-// mbtiTest COLLECTION
+
+	app.patch('/userInfo/:user', (req, res) => {
+		const user = req.params.user;
+		const details = { 'username': user };
+		const data = { 
+			name: req.body.name, 
+			email: req.body.email,
+			phone: req.body.phone,
+			persType: req.body.persType,
+			characteristics: req.body.characteristics
+		};
+		
+		db.collection('userInfo').update(details, data, (err, result) => {
+			if (err) {
+				res.send({'error':'An error has occurred'});
+			} else {
+				res.send(data);
+			} 
+		});
+	});
+	
+	// mbtiTest COLLECTION
 	// ======================
 	// GET request
 	app.get('/mbtiQuestions', (req, res) => {
