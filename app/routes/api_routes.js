@@ -100,6 +100,46 @@ module.exports = function(app, db) {
 		});
 	});
 
+	// GET ALL Personality types 
+	app.get('/allPerstype', (req, res) => {
+		const perstype = req.params.perstype;
+		db.collection('userInfo').find({},{'profile.persType':1}).toArray((err, item) => {
+			if (err) {
+				res.send({'error':'An error has occurred'});
+			} else {
+				res.send(item);
+			}
+		});
+	});
+
+	// GET  Personality types from a given team
+	app.get('/perstype/:team', (req, res) => {
+		const team = req.params.team;
+		const details = { 'team': team };
+		db.collection('userInfo').find(details,{'profile.name':1, 'profile.persType':1}).toArray((err, item) => {
+			if (err) {
+				res.send({'error':'An error has occurred'});
+			} else {
+				res.send(item);
+			}
+		});
+	});
+
+	app.get('/userInfo/:user', (req, res) => {
+		const user = req.params.user;
+		const details = { 'username': user };
+		
+		db.collection('userInfo').findOne(details, (err, item) => {
+			if (err) {
+				res.send({'error':'An error has occurred'});
+			} else {
+				res.send(item);
+			}
+		});
+	});
+
+
+
 	// DELETE request | Delete user with ID: 
 	app.delete('/userInfo/:id', (req, res) => {
 		const id = req.params.id;
