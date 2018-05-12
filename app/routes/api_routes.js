@@ -10,7 +10,7 @@ var config = require('../../config/config');
 module.exports = function(app, db) {
 	// LOGIN POST request
 	app.post('/login', function(req, res) {
-		db.collection('loginInfo').findOne({username: req.body.username },  function (err, user) {
+		db.collection('userInfo').findOne({username: req.body.username },  function (err, user) {
 			if (err) {
 				return res.status(500).send('Error on the server.');
 			} else if (!user || req.body.password !== user.password) { 
@@ -24,9 +24,11 @@ module.exports = function(app, db) {
 			}
 		});
 	});
-
-	//post add new user 
-	app.post('/userinfo', (req, res) => {
+	
+	// USERINFO COLLECTION
+	// ======================
+	//POST - add new user 
+	app.post('/userInfo/create', (req, res) => {
 		const info = { 
 			username: req.body.username,
 			password: req.body.password,
@@ -49,9 +51,7 @@ module.exports = function(app, db) {
 		});
 	});
 
-	// USERINFO COLLECTION
-	// ======================
-	// GET request
+	// GET user data
 	app.get('/userInfo/:user', (req, res) => {
 		const user = req.params.user;
 		const details = { 'username': user };
@@ -77,6 +77,7 @@ module.exports = function(app, db) {
 		});
 	});
 
+	// GET ALL teams 
 	app.get('/allTeams', (req, res) => {
 		const team = req.params.team;
 		db.collection('userInfo').find({},{team:1}).toArray((err, item) => {
@@ -88,6 +89,7 @@ module.exports = function(app, db) {
 		});
 	});
 
+	// GET ALL users 
 	app.get('/allUsers', (req, res) => {
 		const name = req.params.name;
 		db.collection('userInfo').find({},{name:1}).toArray((err, item) => {
@@ -99,37 +101,7 @@ module.exports = function(app, db) {
 		});
 	});
 
-	app.get('/mbtiTest', (req, res) => {
-		const question = req.params.qestion;
-		const answerA = req.params.answerA;
-		const answerB = req.params.answerB;
-
-		db.collection('mbtiTest').find({}).toArray((err, item) => {
-			if (err) {
-				res.send({'error':'An error has occurred'});
-			} else {
-				res.send(item);
-			}
-		});
-	});
-	
-	app.post('/mbtiTest', (req, res) => {
-		const info = { 
-			question: req.body.question,
-			answerA: req.body.answerA,
-			answerB: req.body.answerB
-		};
-		
-		db.collection('mbtiTest').insert(info, (err, result) => {
-			if (err) { 
-				res.send({ 'error': 'An error has occurred' }); 
-			} else {
-				res.send(result.ops[0]);
-			}
-		});
-	});
-	
-	// DELETE request
+	// DELETE request | Delete user with ID: 
 	app.delete('/userInfo/:id', (req, res) => {
 		const id = req.params.id;
 		const details = { '_id': new ObjectID(id) };
@@ -142,27 +114,31 @@ module.exports = function(app, db) {
 			} 
 		});
 	});
-	
-	// PUT request
-	app.put('/userInfo/:id', (req, res) => {
-		const id = req.params.id;
-		const details = { '_id': new ObjectID(id) };
-		const note = { 
-			text: req.body.text, 
-			title: req.body.title 
+
+	// PATCH request | UPDATE user profile
+	app.patch('/update/profile/:user', (req, res) => {
+		const user = req.params.user;
+		const details = { 'username': user };
+		const data = { 
+			name: req.body.name, 
+			email: req.body.email,
+			phone: req.body.phone,
+			persType: req.body.persType,
+			characteristics: req.body.characteristics
 		};
 		
-		db.collection('userInfo').update(details, note, (err, result) => {
+		db.collection('userInfo').update(details, { $set: { profile : data  } }, (err, result) => {
 			if (err) {
 				res.send({'error':'An error has occurred'});
 			} else {
-				res.send(note);
+				res.send({ success: true, data});
 			} 
 		});
 	});
-// mbtiTest COLLECTION
+	
+	// mbtiTest COLLECTION
 	// ======================
-	// GET request
+	// GET MBTI test data 
 	app.get('/mbtiQuestions', (req, res) => {
 		const question = req.params.question;
 		const answerA = req.params.answerA;
@@ -172,6 +148,23 @@ module.exports = function(app, db) {
 				res.send({'error':'An error has occurred'});
 			} else {
 				res.send(item);
+			}
+		});
+	});
+	
+	// POST MBTI test data 
+	app.post('/mbtiTest', (req, res) => {
+		const info = { 
+			question: req.body.question,
+			answerA: req.body.answerA,
+			answerB: req.body.answerB
+		};
+		
+		db.collection('mbtiTest').insert(info, (err, result) => {
+			if (err) { 
+				res.send({ 'error': 'An error has occurred' }); 
+			} else {
+				res.send(result.ops[0]);
 			}
 		});
 	});
