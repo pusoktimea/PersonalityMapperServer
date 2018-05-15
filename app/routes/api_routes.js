@@ -66,8 +66,8 @@ module.exports = function(app, db) {
 	});
 	
 	app.get('/userInfo', (req, res) => {
-		const persType = req.params.persType;
-		const team = req.params.team;
+		// const persType = req.params.persType;
+		// const team = req.params.team;
 		db.collection('userInfo').find({team: "A"},{persType:1}).toArray((err, item) => {
 			if (err) {
 				res.send({'error':'An error has occurred'});
@@ -79,7 +79,6 @@ module.exports = function(app, db) {
 
 	// GET ALL teams 
 	app.get('/allTeams', (req, res) => {
-		const team = req.params.team;
 		db.collection('userInfo').find({},{team:1}).toArray((err, item) => {
 			if (err) {
 				res.send({'error':'An error has occurred'});
@@ -91,8 +90,8 @@ module.exports = function(app, db) {
 
 	// GET ALL users 
 	app.get('/allUsers', (req, res) => {
-		const name = req.params.name;
-		db.collection('userInfo').find({},{name:1}).toArray((err, item) => {
+		// const name = req.params.name;
+		db.collection('userInfo').find({},{'profile.name':1}).toArray((err, item) => {
 			if (err) {
 				res.send({'error':'An error has occurred'});
 			} else {
