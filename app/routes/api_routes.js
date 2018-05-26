@@ -167,4 +167,20 @@ module.exports = function(app, db) {
 			}
 		});
 	});
+
+	app.post('/mbtiCharacteristics', (req, res) => {
+		const info = { 
+			persType: req.body.persType,
+			characteristics: req.body.characteristics,
+		};
+		
+		db.collection('mbtiCharacteristics').insert(info, (err, result) => {
+			if (err) { 
+				res.send({ 'error': 'An error has occurred' }); 
+			} else {
+				res.send(result.ops[0]);
+			}
+		});
+	});
+
 };
