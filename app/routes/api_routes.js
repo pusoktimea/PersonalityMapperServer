@@ -91,7 +91,7 @@ module.exports = function(app, db) {
 	// GET ALL users 
 	app.get('/allUsers', (req, res) => {
 		// const name = req.params.name;
-		db.collection('userInfo').find({},{'profile.name':1}).toArray((err, item) => {
+		db.collection('userInfo').find({},{'profile.name':1, 'username':1}).toArray((err, item) => {
 			if (err) {
 				res.send({'error':'An error has occurred'});
 			} else {
@@ -116,7 +116,7 @@ module.exports = function(app, db) {
 	app.get('/perstype/:team', (req, res) => {
 		const team = req.params.team;
 		const details = { 'team': team };
-		db.collection('userInfo').find(details,{'profile.name':1, 'profile.persType':1}).toArray((err, item) => {
+		db.collection('userInfo').find(details,{'profile.name':1, 'profile.persType':1, 'username':1}).toArray((err, item) => {
 			if (err) {
 				res.send({'error':'An error has occurred'});
 			} else {
