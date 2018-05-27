@@ -139,7 +139,6 @@ module.exports = function(app, db) {
 	});
 
 
-
 	// DELETE request | Delete user with ID: 
 	app.delete('/userInfo/:id', (req, res) => {
 		const id = req.params.id;
@@ -190,7 +189,22 @@ module.exports = function(app, db) {
 			}
 		});
 	});
+
+	// mbtiCharacteristics  COLLECTION
+	// ======================
+	// GET MBTI types and characteristics
+	app.get('/characteristics/:mbtiType', (req, res) => {
+		const mbtiType = req.params.mbtiType;
+		db.collection('mbtiCharacteristics').find({persType: new RegExp(mbtiType, 'i')}).toArray((err,item) => {
+			if (err) {
+				res.send({'error':'An error has occurred'});
+			} else {
+				res.send(item);
+			}
+		});
+	});
 	
+	//db.collection('userInfo').findOne(details, (err, item) => {
 	// POST MBTI test data 
 	app.post('/mbtiTest', (req, res) => {
 		const info = { 
