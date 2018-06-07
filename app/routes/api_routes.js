@@ -75,19 +75,8 @@ module.exports = function(app, db) {
 	});
 
 		// --- DASHBOARD PAGE ---
-	app.get('/userInfo/:user', (req, res) => {
-		const user = req.params.user;
-		const details = { 'username': user };
 
-		db.collection('userInfo').findOne(details, (err, item) => {
-			if (err) {
-				res.send({'error':'An error has occurred'});
-			} else {
-				res.send(item);
-			}
-		});
-	//used to display all teams for manager view
-	});
+		//used to display all teams for manager view
 	app.get('/allTeams', (req, res) => {
 		db.collection('userInfo').find({},{team:1}).toArray((err, item) => {
 			if (err) {
