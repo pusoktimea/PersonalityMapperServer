@@ -61,7 +61,6 @@ module.exports = function(app, db) {
 		});
 	});
 
-	//used on profile page doGet('mbtiQuestions')
 	app.get('/mbtiQuestions', (req, res) => {
 		const question = req.params.question;
 		const answerA = req.params.answerA;
@@ -75,7 +74,7 @@ module.exports = function(app, db) {
 		});
 	});
 
-	//to ret the result from personality test
+	//to get the result from personality test
 	app.get('/characteristics/:mbtiType', (req, res) => {
 		const mbtiType = req.params.mbtiType;
 		db.collection('mbtiCharacteristics').find({persType: new RegExp(mbtiType, 'i')}).toArray((err,item) => {
@@ -127,8 +126,9 @@ module.exports = function(app, db) {
 	// GET  Personality types from a given team for doughnut chart
 	app.get('/perstype/:team', (req, res) => {
 		const team = req.params.team;
-		const details = { 'team': team };
-		db.collection('userInfo').find(details,{'profile.name':1, 'profile.persType':1, 'username':1}).toArray((err, item) => {
+		const condition = {'team' : team};
+		const details = {'profile.name':1, 'profile.persType':1, 'username':1}
+		db.collection('userInfo').find(condition, details).toArray((err, item) => {
 			if (err) {
 				res.send({'error':'An error has occurred'});
 			} else {
@@ -136,7 +136,6 @@ module.exports = function(app, db) {
 			}
 		});
 	});
-
 
 
 								// --- POPULATE DATA IN THE DATABASE ---
