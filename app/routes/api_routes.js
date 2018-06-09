@@ -9,7 +9,7 @@ var config = require('../../dbConfig/config');
 
 module.exports = function(app, db) {
 
-		// --- LOGIN PAGE ---
+									// --- LOGIN PAGE ---
 	app.post('/login', function(req, res) {
 		db.collection('userInfo').findOne({username: req.body.username },  function (err, user) {
 			if (err) {
@@ -25,7 +25,8 @@ module.exports = function(app, db) {
 			}
 		});
 	});
-		// --- PROFILE PAGE ---
+
+									// --- PROFILE PAGE ---
 	app.get('/userInfo/:user', (req, res) => {
 		const user = req.params.user;
 		const details = { 'username': user };
@@ -39,7 +40,7 @@ module.exports = function(app, db) {
 		});
 	});
 
-//to update user profiles
+	//to update user profiles
 	app.patch('/update/profile/:user', (req, res) => {
 		const user = req.params.user;
 		const details = { 'username': user };
@@ -74,9 +75,21 @@ module.exports = function(app, db) {
 		});
 	});
 
-		// --- DASHBOARD PAGE ---
+	//to ret the result from personality test
+	app.get('/characteristics/:mbtiType', (req, res) => {
+		const mbtiType = req.params.mbtiType;
+		db.collection('mbtiCharacteristics').find({persType: new RegExp(mbtiType, 'i')}).toArray((err,item) => {
+			if (err) {
+				res.send({'error':'An error has occurred'});
+			} else {
+				res.send(item);
+			}
+		});
+	});
 
-		//used to display all teams for manager view
+										// --- DASHBOARD PAGE ---
+
+	//used to display all teams for manager view
 	app.get('/allTeams', (req, res) => {
 		db.collection('userInfo').find({},{team:1}).toArray((err, item) => {
 			if (err) {
@@ -98,7 +111,8 @@ module.exports = function(app, db) {
 			}
 		});
 	});
-//used on dasboard to populate tha bar chart for manager
+
+	//used on dasboard to populate tha bar chart for manager
 	app.get('/allPerstype', (req, res) => {
 		const perstype = req.params.perstype;
 		db.collection('userInfo').find({},{'profile.persType':1}).toArray((err, item) => {
@@ -125,7 +139,7 @@ module.exports = function(app, db) {
 
 
 
-	// --- POPULATE DATA IN THE DATABASE ---
+								// --- POPULATE DATA IN THE DATABASE ---
 	//used for adding users
 	app.post('/userInfo/create', (req, res) => {
 		const info = {
@@ -149,7 +163,8 @@ module.exports = function(app, db) {
 			}
 		});
 	});
-//used to add MBTI questions
+
+	//used to add MBTI questions
 	app.post('/mbtiTest', (req, res) => {
 		const info = {
 			question: req.body.question,
@@ -166,34 +181,7 @@ module.exports = function(app, db) {
 		});
 	});
 
-// ----- WHERE ARE THESE USED?
-
-//I don't think it's used
-	app.get('/userInfo', (req, res) => {
-		// const persType = req.params.persType;
-		// const team = req.params.team;
-		db.collection('userInfo').find({team: "A"},{persType:1}).toArray((err, item) => {
-			if (err) {
-				res.send({'error':'An error has occurred'});
-			} else {
-				res.send(item);
-			}
-		});
-	});
-
-	//where is this used
-	app.get('/characteristics/:mbtiType', (req, res) => {
-		const mbtiType = req.params.mbtiType;
-		db.collection('mbtiCharacteristics').find({persType: new RegExp(mbtiType, 'i')}).toArray((err,item) => {
-			if (err) {
-				res.send({'error':'An error has occurred'});
-			} else {
-				res.send(item);
-			}
-		});
-	});
-
-//where is this used?
+	//used to add characterstics to each MBTI type 
 	app.post('/mbtiCharacteristics', (req, res) => {
 		const info = {
 			persType: req.body.persType,
@@ -208,5 +196,4 @@ module.exports = function(app, db) {
 			}
 		});
 	});
-
 };
