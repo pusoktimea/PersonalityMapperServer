@@ -127,8 +127,8 @@ module.exports = function(app, db) {
 	app.get('/perstype/:team', (req, res) => {
 		const team = req.params.team;
 		const condition = {'team' : team};
-		const details = {'profile.name':1, 'profile.persType':1, 'username':1}
-		db.collection('userInfo').find(condition, details).toArray((err, item) => {
+		const persInfo = {'profile.name':1, 'profile.persType':1, 'username':1}
+		db.collection('userInfo').find(condition, persInfo).toArray((err, item) => {
 			if (err) {
 				res.send({'error':'An error has occurred'});
 			} else {
